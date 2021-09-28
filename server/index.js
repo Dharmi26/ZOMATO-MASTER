@@ -20,6 +20,7 @@ import Reviews from "./API/reviews";
 import User from "./API/user";
 import Menu from "./API/menu";
 import MailService from "./API/Mail";
+import Image from "./API/Image";
 
 // Database connection
 import ConnectDB from "./database/connection";
@@ -35,6 +36,7 @@ zomato.use(passport.initialize());
 zomato.use(passport.session());
 zomato.use("/menu", Menu);
 zomato.use("/mail", MailService);
+zomato.use("/image", Image);
 
 // passport cofiguration
 googleAuthConfig(passport);

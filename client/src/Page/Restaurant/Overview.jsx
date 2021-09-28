@@ -73,6 +73,15 @@ const Overview = () => {
   const ratingChanged = (newRating) => {
     console.log(newRating);
   };
+
+  const getLatLong = (mapAddress) => {
+   return mapAddress?.split(",").map((item) => parseFloat(item));
+ };
+
+ console.log(
+   reduxState?.mapLocation?.split(",").map((item) => parseFloat(item))
+ );
+ 
   return (
     <>
       <div className="flex flex-col md:flex-row relative">

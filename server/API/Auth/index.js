@@ -1,11 +1,11 @@
-//Library
+// Library
 import express from "express";
 import bcrypt from "bcryptjs";
-import jwt from "jsonwebtoken"
+import jwt from "jsonwebtoken";
 import passport from "passport";
 
-//Models
-import { UserModel} from "../../database/user";
+// Models
+import { UserModel } from "../../database/user";
 
 // validation
 import { ValidateSignup, ValidateSignin } from "../../validation/auth";
@@ -13,22 +13,21 @@ import { ValidateSignup, ValidateSignin } from "../../validation/auth";
 const Router = express.Router();
 
 /*
-Route      /signup
+Route     /signup
 Des       Register new user
-params    none
+Params    none
 Access    Public
-Method    Post
+Method    POST
 */
-Router.post("/signup", async(req,res) => {
-  try{
+Router.post("/signup", async (req, res) => {
+  try {
     await ValidateSignup(req.body.credentials);
 
     await UserModel.findByEmailAndPhone(req.body.credentials);
     const newUser = await UserModel.create(req.body.credentials);
     const token = newUser.generateJwtToken();
-  return res.status(200).json({ token, status: "success" });
-
-  } catch(error) {
+    return res.status(200).json({ token, status: "success" });
+  } catch (error) {
     return res.status(500).json({ error: error.message });
   }
 });

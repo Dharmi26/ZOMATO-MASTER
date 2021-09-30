@@ -13,9 +13,12 @@ import ReviewCard from "../../Components/restaurant/Reviews/reviewCard";
 import Mapview from "../../Components/restaurant/Mapview";
 
 import { getImage } from "../../Redux/Reducer/Image/Image.action";
+import { getReviews } from "../../Redux/Reducer/Reviews/review.action";
 
 const Overview = () => {
   const [menuImage, setMenuImages] = useState({ images: [] });
+  const [Reviews, setReviewss] = useState([]);
+
   const { id } = useParams();
 
   const settings = {
@@ -67,6 +70,9 @@ const Overview = () => {
         data.payload.image.images.map(({ location }) => images.push(location));
         setMenuImages(images);
       });
+      dispatch(getReviews(reduxState?._id)).then((data) =>
+        setReviewss(data.payload.reviews)
+      );
     }
   }, []);
 
@@ -75,13 +81,9 @@ const Overview = () => {
   };
 
   const getLatLong = (mapAddress) => {
-   return mapAddress?.split(",").map((item) => parseFloat(item));
- };
+    return mapAddress?.split(",").map((item) => parseFloat(item));
+  };
 
- console.log(
-   reduxState?.mapLocation?.split(",").map((item) => parseFloat(item))
- );
- 
   return (
     <>
       <div className="flex flex-col md:flex-row relative">
@@ -102,19 +104,15 @@ const Overview = () => {
           </div>
           <h4 className="text-lg font-medium my-4">Cuisines</h4>
           <div className="flex flex-wrap gap-2">
-            <span className="border border-gray-600 text-blue-600 px-2 py-1 rounded-full">
-              Street Food
-            </span>
-            <span className="border border-gray-600 text-blue-600 px-2 py-1 rounded-full">
-              Street Food
-            </span>
-            <span className="border border-gray-600 text-blue-600 px-2 py-1 rounded-full">
-              Street Food
-            </span>
+            {reduxState?.cuisine.map((data) => (
+              <span className="border border-gray-600 text-blue-600 px-2 py-1 rounded-full">
+                {data}
+              </span>
+            ))}
           </div>
           <div className="my-4">
             <h4 className="text-lg font-medium">Average Cost</h4>
-            <h6>₹100 for one order (approx.)</h6>
+            <h6>₹{reduxState?.averageCost} for one order (approx.)</h6>
             <small className="text-gray-500">
               Exclusive of applicable taxes and charges, if any
             </small>
@@ -156,31 +154,30 @@ const Overview = () => {
               size={24}
               activeColor="#ffd700"
             />
+            {Reviews.map((reviewData) => (
+              <ReviewCard {...reviewData} />
+            ))}
           </div>
           <div className="my-4 w-full  md:hidden flex flex-col gap-4">
             <Mapview
-              title="Mumbai Xpress"
-              phno="+911212121212"
-              mapLocation={[12.988134202889283, 77.59405893120281]}
-              address="15, Sigma Central Mall, Vasanth Nagar, Cunningham Road, Bangalore"
+              title={reduxState?.name}
+              phno={`+91${reduxState?.contactNumber}`}
+              mapLocation={getLatLong(reduxState?.mapLocation)}
+              address={reduxState?.address}
             />
           </div>
 
-          <div className="my-4 flex flex-col gap-4">
-            <ReviewCard />
-            <ReviewCard />
-            <ReviewCard />
-          </div>
+          <div className="my-4 flex flex-col gap-4"></div>
         </div>
         <aside
           style={{ height: "fit-content" }}
           className="hidden md:flex md:w-4/12 sticky rounded-xl top-2 bg-white p-3 shadow-md flex flex-col gap-4"
         >
           <Mapview
-            title="Mumbai Xpress"
-            phno="+911212121212"
-            mapLocation={[12.988134202889283, 77.59405893120281]}
-            address="15, Sigma Central Mall, Vasanth Nagar, Cunningham Road, Bangalore"
+            title={reduxState?.name}
+            phno={`+91${reduxState?.contactNumber}`}
+            mapLocation={getLatLong(reduxState?.mapLocation)}
+            address={reduxState?.address}
           />
         </aside>
       </div>

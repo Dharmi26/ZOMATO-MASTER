@@ -1,17 +1,34 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
+import { useSelector, useDispatch } from "react-redux";
 import { AiOutlineCompass } from "react-icons/ai";
 import { BiTimeFive } from "react-icons/bi";
 
 // components
 import FloatMenuBtn from "../../Components/restaurant/Order-Online/FloatMenuBtn";
 import MenuListContainer from "../../Components/restaurant/Order-Online/MenuListContainer";
-
 import FoodList from "../../Components/restaurant/Order-Online/FoodList";
 
+// redux actions
+import { getFoodList } from "../../Redux/Reducer/Food/Food.action";
+
 const OrderOnline = () => {
+  const [menu, setMenu] = useState([]);
+
+  const reduxState = useSelector(
+    (globalStore) => globalStore.restaurant.selectedRestaurant.restaurant
+  );
+  const dispatch = useDispatch();
+
+  useEffect(() => {
+    reduxState &&
+      dispatch(getFoodList(reduxState.menu)).then((data) =>
+        setMenu(data.payload.menus.menus)
+      );
+  }, [reduxState]);
+
   return (
     <>
-    <div className="w-full h-screen flex ">
+      <div className="w-full h-screen flex ">
         <aside className="hidden md:flex flex-col gap-3 border-r overflow-y-scroll border-gray-200 h-screen w-1/4">
           <MenuListContainer />
           <MenuListContainer />
@@ -24,24 +41,13 @@ const OrderOnline = () => {
             </h4>
           </div>
           <section className="flex  h-screen overflow-y-scroll flex-col gap-3 md:gap-5">
-            <FoodList
-              title="Recommended"
-              items={[
-                {
-                  price: "1000",
-                  rating: 3,
-                  description:
-                    "Lorem ipsum dolor sit amet consectetur adipisicing elit. Autem dicta repellendus sit cumque eum odio animi doloribus quo voluptatem aut ipsam, consectetur non minima rerum eligendi magnam aspernatur culpa provident?",
-                  title: "Yummy food",
-                  image:
-                    "https://b.zmtcdn.com/data/dish_photos/839/62575c08ce26635e3f48b3642805d839.jpg?output-format=webp",
-                },
-              ]}
-            />
+            {menu.map((item) => (
+              <FoodList key={item._id} {...item} />
+            ))}
           </section>
         </div>
-     </div>
-    <FloatMenuBtn />
+      </div>
+      <FloatMenuBtn />
     </>
   );
 };
